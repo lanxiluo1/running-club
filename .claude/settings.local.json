@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/d/AI项目库/飞行国度训练/.venv/Scripts/python.exe\" run.py)",
+      "Bash(\"/d/AI项目库/飞行国度训练/.venv/Scripts/pip.exe\" install *)"
+    ]
+  }
+}

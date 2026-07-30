@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.db
+.venv/
+.env
+
+# 前端
+node_modules/
+dist/
+.vite/
+
+# IDE
+.vscode/
+.idea/
