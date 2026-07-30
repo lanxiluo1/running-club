@@ -18,7 +18,11 @@ app = FastAPI(
 # 配置CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 允许所有来源，生产环境应限制
+    allow_origins=[
+        "https://running-club-gzc2-lyart.vercel.app",
+        "http://localhost:5173",
+        "*"
+    ],  # 允许所有来源，生产环境应限制
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
