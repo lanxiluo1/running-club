@@ -103,6 +103,49 @@
             <el-empty v-if="badges.length === 0" description="暂无成就，继续加油！" :image-size="60" />
           </div>
         </el-card>
+
+        <el-card class="admin-card" style="margin-top: 20px;">
+          <template #header>
+            <span>管理员设置</span>
+          </template>
+          <div class="admin-section">
+            <div class="current-role">
+              当前身份：
+              <el-tag :type="currentRole === 'admin' ? 'danger' : 'info'" size="large">
+                {{ currentRole === 'admin' ? '管理员' : '普通成员' }}
+              </el-tag>
+            </div>
+
+            <div class="role-change-form">
+              <el-form :model="roleForm" label-width="120px">
+                <el-form-item label="管理员验证密码">
+                  <el-input
+                    v-model="roleForm.adminPassword"
+                    type="password"
+                    placeholder="请输入管理员验证密码"
+                    show-password
+                  />
+                </el-form-item>
+                <el-form-item label="操作">
+                  <el-button
+                    type="primary"
+                    :loading="roleLoading"
+                    @click="handleChangeRole('admin')"
+                  >
+                    注册管理员
+                  </el-button>
+                  <el-button
+                    type="warning"
+                    :loading="roleLoading"
+                    @click="handleChangeRole('member')"
+                  >
+                    取消管理员
+                  </el-button>
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -120,6 +163,11 @@ const passwordFormRef = ref(null)
 const saving = ref(false)
 const passwordLoading = ref(false)
 const stats = ref({})
+const currentRole = ref('member')
+const roleForm = reactive({
+  adminPassword: ''
+})
+const roleLoading = ref(false)
 
 const form = reactive({
   student_id: '',
@@ -169,7 +217,10 @@ const loadProfile = async () => {
     form.academy = userInfo.academy || ''
     form.grade = userInfo.grade || ''
     form.group_type = userInfo.group_type || 'beginner'
+    currentRole.value = userInfo.role || 'member'
     userStore.setUserInfo(userInfo)
+    // 更新 store 中的角色
+    localStorage.setItem('userRole', userInfo.role || 'member')
   } catch (e) {
     console.error(e)
   }
@@ -252,6 +303,30 @@ onMounted(() => {
   loadProfile()
   loadStats()
 })
+
+const handleChangeRole = async (targetRole) => {
+  if (!roleForm.adminPassword) {
+    ElMessage.warning('请输入管理员验证密码')
+    return
+  }
+
+  roleLoading.value = true
+  try {
+    const result = await userApi.changeMyRole({
+      admin_password: roleForm.adminPassword,
+      target_role: targetRole
+    })
+    ElMessage.success(result.message || '角色修改成功')
+    roleForm.adminPassword = ''
+    loadProfile()
+  } catch (e) {
+    if (e.response?.data?.detail) {
+      ElMessage.error(e.response.data.detail)
+    }
+  } finally {
+    roleLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -320,5 +395,23 @@ onMounted(() => {
 .badge-name {
   font-size: 14px;
   color: #333;
+}
+
+.admin-section {
+  padding: 10px 0;
+}
+
+.current-role {
+  font-size: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.role-change-form {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
 }
 </style>

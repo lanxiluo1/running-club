@@ -11,7 +11,8 @@ export const authApi = {
 export const userApi = {
   getProfile: () => request.get('/users/me'),
   updateProfile: (data) => request.put('/users/me', data),
-  changePassword: (data) => request.put('/users/me/password', data)
+  changePassword: (data) => request.put('/users/me/password', data),
+  changeMyRole: (data) => request.put('/users/me/role', data)
 }
 
 // 打卡记录相关
