@@ -1,0 +1,5 @@
+[build]
+apt = ["tesseract-ocr", "tesseract-ocr-chi-sim"]
+
+[deploy]
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
