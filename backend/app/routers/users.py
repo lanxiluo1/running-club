@@ -98,3 +98,37 @@ def change_password(
     db.commit()
 
     return {"message": "密码修改成功"}
+
+
+class RoleChange(BaseModel):
+    admin_password: str
+    target_role: str  # "admin" or "member"
+
+
+@router.put("/me/role")
+def change_my_role(
+    role_data: RoleChange,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """通过管理员密码变更自己的角色"""
+    # 管理员验证密码
+    ADMIN_PASSWORD = "764759717"  # 管理员验证密码
+
+    if role_data.admin_password != ADMIN_PASSWORD:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="管理员密码错误"
+        )
+
+    if role_data.target_role not in ["admin", "member"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="目标角色只能是 admin 或 member"
+        )
+
+    current_user.role = role_data.target_role
+    db.commit()
+    db.refresh(current_user)
+
+    return {"message": f"已成功将自己的角色设置为 {role_data.target_role}"}
