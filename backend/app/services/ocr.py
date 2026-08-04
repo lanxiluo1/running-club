@@ -493,6 +493,7 @@ class OCRService:
 
             possible_paths.extend([
                 os.environ.get('TESSERACT_PATH', ''),
+                r'D:\tesseract\tesseract.exe',
                 r'D:\Tesseract\tesseract.exe',
                 r'D:\Program Files\Tesseract-OCR\tesseract.exe',
                 r'D:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
